@@ -1,22 +1,32 @@
 export const themeMap = {
     light: {
-        primaryColor: 'bg-pink-500 text-black',
-        secondaryColor: 'text-white',
+      backgroundColor: 'bg-gray-200',
+      textColor: 'text-black',
+      secondaryColor: 'text-gray-600',
+      accentColor: 'text-pink-500',
     },
     dark: {
-        primaryColor: 'bg-black text-white',
-        secondaryColor: 'text-white',
+      backgroundColor: 'bg-gray-800',
+      textColor: 'text-white',
+      secondaryColor: 'text-gray-300',
+      accentColor: 'text-pink-500',
     },
     blue: {
-        primaryColor: 'bg-blue-500 text-white',
-        secondaryColor: 'text-white',
+      backgroundColor: 'bg-blue-600',
+      textColor: 'text-white',
+      secondaryColor: 'text-gray-200',
+      accentColor: 'text-pink-500',
     },
     green: {
-        primaryColor: 'bg-green-500 text-white',
-        secondaryColor: 'text-white',
+      backgroundColor: 'bg-green-600',
+      textColor: 'text-white',
+      secondaryColor: 'text-gray-200',
+      accentColor: 'text-pink-500',
     },
     red: {
-        primaryColor: 'bg-red-500 text-white',
-        secondaryColor: 'text-white',
+      backgroundColor: 'bg-red-600',
+      textColor: 'text-white',
+      secondaryColor: 'text-gray-200',
+      accentColor: 'text-pink-500',
     },
-}
+  };

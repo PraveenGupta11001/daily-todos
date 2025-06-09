@@ -11,7 +11,6 @@ export default function Navbar() {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Theme buttons with filled background and subtle glow
   const themeButtons = Object.entries(themeMap).map(([name, theme]) => (
     <motion.button
       key={name}
@@ -24,11 +23,11 @@ export default function Navbar() {
       <Circle
         size={12}
         fill={
-          theme.primaryColor.includes('pink') ? 'pink'
-          : theme.primaryColor.includes('black') ? 'black'
-          : theme.primaryColor.includes('green') ? '#22c55e'
-          : theme.primaryColor.includes('blue') ? '#3b82f6'
-          : theme.primaryColor.includes('red') ? '#ef4444'
+          theme.backgroundColor.includes('pink') ? 'pink'
+          : theme.backgroundColor.includes('gray-800') ? 'black'
+          : theme.backgroundColor.includes('green') ? '#22c55e'
+          : theme.backgroundColor.includes('blue') ? '#3b82f6'
+          : theme.backgroundColor.includes('red') ? '#ef4444'
           : 'gray'
         }
         stroke="none"
@@ -36,7 +35,6 @@ export default function Navbar() {
     </motion.button>
   ));
 
-  // Mobile menu animation variants
   const mobileMenuVariants = {
     hidden: { opacity: 0, y: -10 },
     visible: {
@@ -54,16 +52,15 @@ export default function Navbar() {
 
   return (
     <motion.header
-      className={`${currentTheme.primaryColor} sticky top-0 z-50 bg-opacity-90 backdrop-blur-sm shadow-md`}
+      className={`${currentTheme.backgroundColor} ${currentTheme.textColor} sticky top-0 z-50 bg-opacity-90 backdrop-blur-sm shadow-md`}
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4 }}
     >
       <nav className="container mx-auto px-4 py-3 flex justify-between items-center">
-        {/* Logo + Theme buttons */}
         <div className="flex items-center gap-4">
           <motion.h1
-            className="text-xl font-semibold text-white"
+            className="text-xl font-semibold"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -72,13 +69,12 @@ export default function Navbar() {
           <div className="flex items-center">{themeButtons}</div>
         </div>
 
-        {/* Desktop Navigation */}
-        <ul className="hidden md:flex gap-6 text-sm font-medium text-white">
+        <ul className="hidden md:flex gap-6 text-sm font-medium">
           {['Home', 'Todos', 'Todols', 'About'].map((item) => (
             <motion.li
               key={item}
               variants={menuItemVariants}
-              whileHover={{ x: 5, color: '#ec4899' }}
+              whileHover={{ x: 5, color: currentTheme.accentColor }}
             >
               <NavLink
                 to={
@@ -96,7 +92,6 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Mobile Menu Button */}
         <motion.button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="md:hidden p-2 rounded-md hover:bg-pink-500/20"
@@ -104,14 +99,13 @@ export default function Navbar() {
           whileTap={{ scale: 0.9 }}
         >
           {isMenuOpen ? (
-            <X size={30} className="text-white" />
+            <X size={30} />
           ) : (
-            <SquareMenu size={30} className="text-white" />
+            <SquareMenu size={30} />
           )}
         </motion.button>
       </nav>
 
-      {/* Mobile Dropdown Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
