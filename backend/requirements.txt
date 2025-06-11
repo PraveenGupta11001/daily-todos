@@ -5,3 +5,7 @@ asyncpg
 psycopg2-binary
 python-dotenv
 alembic
+pydantic
+passlib[bcrypt]
+python-jose
+python-multipart
