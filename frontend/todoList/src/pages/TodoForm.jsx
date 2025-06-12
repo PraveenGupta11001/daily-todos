@@ -8,6 +8,7 @@ export default function TodoForm() {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [error, setError] = useState('');
 
   const adjustedBackgroundColor =
     currentTheme.backgroundColor === 'bg-green-600' ? 'bg-emerald-700' :
@@ -18,11 +19,35 @@ export default function TodoForm() {
   const textColor = currentTheme.backgroundColor === 'bg-gray-200' ? 'text-black' : 'text-white';
   const headingColor = currentTheme.backgroundColor === 'bg-gray-200' ? 'text-pink-500' : 'text-white';
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulated add todo (replace with API call)
-    console.log('Adding todo:', { title, description });
-    navigate('/todos');
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      const response = await fetch('http://localhost:8000/todos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title, description, completed: false }),
+      });
+      if (response.ok) {
+        navigate('/todos');
+      } else {
+        const data = await response.json();
+        setError(data.detail || 'Failed to add todo');
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          navigate('/login');
+        }
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    }
   };
 
   return (
@@ -36,6 +61,8 @@ export default function TodoForm() {
         >
           Add Todo
         </motion.h2>
+
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
         <motion.form
           onSubmit={handleSubmit}

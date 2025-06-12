@@ -1,24 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate, NavLink } from 'react-router-dom';
+import { useParams, useNavigate, NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 export default function TodoEdit() {
-  // const { id } = useParams();
-  const { id } = 'dfdf';
+  const { id } = useParams();
   const navigate = useNavigate();
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [completed, setCompleted] = useState(false);
+  const [error, setError] = useState('');
+
+  const getErrorMessage = (errorData) => {
+    if (typeof errorData === 'string') return errorData;
+    if (Array.isArray(errorData)) {
+      return errorData.map(err => err.msg).join(', ');
+    }
+    if (errorData && errorData.msg) return errorData.msg;
+    return 'An unknown error occurred.';
+  };
 
   useEffect(() => {
-    // Simulated fetch (replace with API call)
-    const mockTodo = { id, title: `Todo ${id}`, description: 'This is a sample todo.', completed: false };
-    setTitle(mockTodo.title);
-    setDescription(mockTodo.description);
-    setCompleted(mockTodo.completed);
-  }, [id]);
+    if (!id) {
+      setError('No todo ID provided.');
+      navigate('/todos');
+      return;
+    }
+    const fetchTodo = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+        const response = await fetch(`http://localhost:8000/todos/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setTitle(data.title);
+          setDescription(data.description || '');
+          setCompleted(data.completed);
+        } else {
+          setError(getErrorMessage(data.detail || 'Failed to fetch todo'));
+          if (response.status === 401) {
+            localStorage.removeItem('token');
+            navigate('/login');
+          }
+        }
+      } catch (err) {
+        setError('An error occurred. Please try again.');
+      }
+    };
+    fetchTodo();
+  }, [id, navigate]);
 
   const adjustedBackgroundColor =
     currentTheme.backgroundColor === 'bg-green-600' ? 'bg-emerald-700' :
@@ -29,11 +67,35 @@ export default function TodoEdit() {
   const textColor = currentTheme.backgroundColor === 'bg-gray-200' ? 'text-black' : 'text-white';
   const headingColor = currentTheme.backgroundColor === 'bg-gray-200' ? 'text-pink-500' : 'text-white';
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulated edit todo (replace with API call)
-    console.log('Editing todo:', { id, title, description, completed });
-    navigate('/todos');
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      const response = await fetch(`http://localhost:8000/todos/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title, description, completed }),
+      });
+      if (response.ok) {
+        navigate('/todos');
+      } else {
+        const data = await response.json();
+        setError(getErrorMessage(data.detail || 'Failed to update todo'));
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          navigate('/login');
+        }
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    }
   };
 
   return (
@@ -47,6 +109,8 @@ export default function TodoEdit() {
         >
           Edit Todo
         </motion.h2>
+
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
         <motion.form
           onSubmit={handleSubmit}
