@@ -6,22 +6,24 @@ import TodoList from '../pages/TodoList';
 import TodoDetails from '../pages/TodoDetails';
 import TodoForm from '../pages/TodoForm';
 import TodoEdit from '../pages/TodoEdit';
-import TodoDelete from '../pages/TodoDelete'; // Placeholder for delete page
-import Login from '../pages/Login'; // Placeholder for login page
-import Signup from '../pages/Signup'; // Placeholder for signup page
+import TodoDelete from '../pages/TodoDelete';
+import Login from '../pages/Login';
+import Signup from '../pages/Signup';
 
-// Simulated authentication (replace with actual auth logic later)
-const isLoggedIn = false;
+// Function to check if the user is logged in by verifying the presence of a token
+const isLoggedIn = () => {
+  const token = localStorage.getItem('token');
+  return !!token; // Returns true if token exists, false otherwise
+};
 
 // PrivateRoute: Only accessible to logged-in users
 const PrivateRoute = ({ children }) => {
-//   return isLoggedIn ? children : <Navigate to="/login" />;
-  return isLoggedIn ? children : children
+  return isLoggedIn() ? children : <Navigate to="/login" />;
 };
 
 // PublicRoute: Only accessible to non-logged-in users
 const PublicRoute = ({ children }) => {
-  return !isLoggedIn ? children : <Navigate to="/todos" />;
+  return !isLoggedIn() ? children : <Navigate to="/todos" />;
 };
 
 export default function AppRoutes() {
