@@ -13,7 +13,7 @@ export default function TodoForm() {
   const [suggestions, setSuggestions] = useState(null);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
 
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://we-connect-nifx.onrender.com';
+  const BACKEND_URL = import.meta.env.SUGGESTION_BACKEND_URL || 'https://we-connect-nifx.onrender.com';
 
   const getErrorMessage = (errorData) => {
     if (typeof errorData === 'string') return errorData;
@@ -76,6 +76,7 @@ export default function TodoForm() {
         const chunk = decoder.decode(value);
         const lines = chunk.split('\n').filter((line) => line.trim());
         for (const line of lines) {
+          // console.log('Received chunk:', line); // Debugging line
           try {
             const data = JSON.parse(line);
             if (data.response) {

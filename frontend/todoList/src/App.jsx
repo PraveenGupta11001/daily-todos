@@ -1,35 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, useLocation } from 'react-router-dom';
+import { BrowserRouter, useLocation, useNavigationType } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import AppRoutes from './routes/AppRoutes';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
-import { LoaderPinwheel } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Loader from '../src/assets/Loader.webp';
 
 import './App.css';
 
-function ScrollReloadAndLoad() {
+function ScrollAndLoad() {
   const location = useLocation();
+  const navigationType = useNavigationType();
   const [isLoading, setIsLoading] = useState(false);
-  const currentTheme = useSelector((state) => state.theme.currentTheme);
 
   useEffect(() => {
-    // Show loader and reload on URL change
-    const handleRouteChange = () => {
-      setIsLoading(true);
-      window.scrollTo(0, 0); // Scroll to top
-      window.location.reload(); // Reload the page
-    };
+    // Show loader during navigation
+    setIsLoading(true);
+    window.scrollTo(0, 0); // Scroll to top
 
-    handleRouteChange();
+    // Simulate a loading delay (e.g., for data fetching or transition)
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500); // Adjust the delay as needed
 
-    // Since the page reloads, we don't need to hide the loader here
-    // The browser reset will handle it
-  }, [location.pathname]);
-
-  // Loader color based on theme
-  const loaderColor = currentTheme.backgroundColor === 'bg-gray-200' ? '#000000' : '#ffffff';
+    return () => clearTimeout(timer); // Cleanup timer on unmount
+  }, [location.pathname, navigationType]); // Trigger on path or navigation type change
 
   return (
     <>
@@ -41,10 +37,10 @@ function ScrollReloadAndLoad() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <LoaderPinwheel
-            size={48}
-            className="animate-spin"
-            style={{ color: loaderColor }}
+          <img
+            src={Loader}
+            alt="Loading..."
+            className="w-75 animate-spin rounded-full"
           />
         </motion.div>
       )}
@@ -56,7 +52,7 @@ function App() {
   return (
     <div>
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPaths: true }}>
-        <ScrollReloadAndLoad />
+        <ScrollAndLoad />
         <Navbar />
         <AppRoutes />
         <Footer />

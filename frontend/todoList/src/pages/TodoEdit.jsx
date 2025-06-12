@@ -14,7 +14,7 @@ export default function TodoEdit() {
   const [suggestions, setSuggestions] = useState(null);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
 
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://we-connect-nifx.onrender.com';
+  const BACKEND_URL = import.meta.env.SUGGESTION_BACKEND_URL || 'https://we-connect-nifx.onrender.com';
 
   const getErrorMessage = (errorData) => {
     if (typeof errorData === 'string') return errorData;

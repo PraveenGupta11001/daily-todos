@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { setUser } from '../features/authUser';
 
 export default function Login() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   const [email, setEmail] = useState('');
@@ -35,6 +37,7 @@ export default function Login() {
       const data = await response.json();
       if (response.ok) {
         localStorage.setItem('token', data.access_token);
+        dispatch(setUser({ email })); // Update Redux state
         navigate('/todos');
       } else {
         setError(data.detail || 'Login failed');
