@@ -1,20 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 export default function TodoDelete() {
-//   const { id } = useParams();
-const { id } = 'fdds';
+  const { id } = useParams();
   const navigate = useNavigate();
   const currentTheme = useSelector((state) => state.theme.currentTheme);
-  const [todo, setTodo] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // Simulated fetch (replace with API call)
-    const mockTodo = { id, title: `Todo ${id}` };
-    setTodo(mockTodo);
-  }, [id]);
+    if (!id) {
+      setError('No todo ID provided.');
+      navigate('/todos');
+    }
+  }, [id, navigate]);
+
+  const getErrorMessage = (errorData) => {
+    if (typeof errorData === 'string') return errorData;
+    if (Array.isArray(errorData)) {
+      return errorData.map(err => err.msg).join(', ');
+    }
+    if (errorData && errorData.msg) return errorData.msg;
+    return 'An unknown error occurred.';
+  };
 
   const adjustedBackgroundColor =
     currentTheme.backgroundColor === 'bg-green-600' ? 'bg-emerald-700' :
@@ -25,19 +34,33 @@ const { id } = 'fdds';
   const textColor = currentTheme.backgroundColor === 'bg-gray-200' ? 'text-black' : 'text-white';
   const headingColor = currentTheme.backgroundColor === 'bg-gray-200' ? 'text-pink-500' : 'text-white';
 
-  const handleDelete = () => {
-    // Simulated delete (replace with API call)
-    console.log('Deleting todo:', id);
-    navigate('/todos');
+  const handleDelete = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      const response = await fetch(`http://localhost:8000/todos/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        navigate('/todos');
+      } else {
+        const data = await response.json();
+        setError(getErrorMessage(data.detail || 'Failed to delete todo'));
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          navigate('/login');
+        }
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    }
   };
-
-  if (!todo) {
-    return (
-      <div className={`${adjustedBackgroundColor} ${textColor} min-h-screen bg-opacity-90 backdrop-blur-sm flex items-center justify-center`}>
-        <p className={`text-lg ${currentTheme.secondaryColor}`}>Loading...</p>
-      </div>
-    );
-  }
 
   return (
     <div className={`${adjustedBackgroundColor} ${textColor} min-h-screen bg-opacity-90 backdrop-blur-sm`}>
@@ -51,28 +74,28 @@ const { id } = 'fdds';
           Delete Todo
         </motion.h2>
 
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
         <motion.div
           className="max-w-md mx-auto bg-white/20 backdrop-blur-md p-6 rounded-lg shadow-md text-center"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <p className={`text-lg ${currentTheme.secondaryColor} mb-4`}>
-            Are you sure you want to delete "<strong>{todo.title}</strong>"?
-          </p>
+          <p className="mb-4">Are you sure you want to delete this todo?</p>
           <div className="flex gap-4 justify-center">
             <button
               onClick={handleDelete}
-              className="bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-600 transition-all"
+              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-all"
             >
-              Yes, Delete
+              Delete
             </button>
-            <button
-              onClick={() => navigate('/todos')}
+            <NavLink
+              to="/todos"
               className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-all"
             >
               Cancel
-            </button>
+            </NavLink>
           </div>
         </motion.div>
       </div>

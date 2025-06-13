@@ -1,18 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 export default function TodoDetails() {
-  const { id } = '2343';
-//   const { id } = useParams();
+  const { id } = useParams(); // Fixed: Use useParams to get the id dynamically
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   const [todo, setTodo] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // Simulated fetch (replace with actual API call)
-    const mockTodo = { id, title: `Todo ${id}`, description: 'This is a sample todo.', completed: false, createdAt: '2025-06-09' };
-    setTodo(mockTodo);
+    const fetchTodo = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+        const response = await fetch(`http://localhost:8000/todos/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          // Map backend completed boolean to status
+          const status = data.completed ? 'Completed' : 'Pending';
+          setTodo({ ...data, status });
+        } else {
+          setError(data.detail || 'Failed to fetch todo');
+        }
+      } catch (err) {
+        setError('An error occurred. Please try again.');
+      }
+    };
+    fetchTodo();
   }, [id]);
 
   const adjustedBackgroundColor =
@@ -27,7 +49,7 @@ export default function TodoDetails() {
   if (!todo) {
     return (
       <div className={`${adjustedBackgroundColor} ${textColor} min-h-screen bg-opacity-90 backdrop-blur-sm flex items-center justify-center`}>
-        <p className={`text-lg ${currentTheme.secondaryColor}`}>Loading...</p>
+        <p className={`text-lg ${currentTheme.secondaryColor}`}>{error || 'Loading...'}</p>
       </div>
     );
   }
@@ -44,6 +66,8 @@ export default function TodoDetails() {
           Todo Details
         </motion.h2>
 
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
         <motion.div
           className="max-w-2xl mx-auto bg-white/20 backdrop-blur-md p-6 rounded-lg shadow-md"
           initial={{ opacity: 0, scale: 0.9 }}
@@ -51,8 +75,8 @@ export default function TodoDetails() {
           transition={{ duration: 0.5 }}
         >
           <h3 className={`text-xl font-semibold ${headingColor} mb-2`}>{todo.title}</h3>
-          <p className={`${currentTheme.secondaryColor} mb-2`}><strong>Description:</strong> {todo.description}</p>
-          <p className={`${currentTheme.secondaryColor} mb-2`}><strong>Status:</strong> {todo.completed ? 'Completed' : 'Pending'}</p>
+          <p className={`${currentTheme.secondaryColor} mb-2`}><strong>Description:</strong> {todo.description || 'No description'}</p>
+          <p className={`${currentTheme.secondaryColor} mb-2`}><strong>Status:</strong> {todo.status}</p>
           <p className={`${currentTheme.secondaryColor} mb-4`}><strong>Created At:</strong> {todo.createdAt}</p>
           <div className="flex gap-4">
             <NavLink

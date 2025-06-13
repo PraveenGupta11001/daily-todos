@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 export default function Signup() {
+  const navigate = useNavigate();
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
 
   const adjustedBackgroundColor =
     currentTheme.backgroundColor === 'bg-green-600' ? 'bg-emerald-700' :
@@ -18,10 +20,29 @@ export default function Signup() {
   const textColor = currentTheme.backgroundColor === 'bg-gray-200' ? 'text-black' : 'text-white';
   const headingColor = currentTheme.backgroundColor === 'bg-gray-200' ? 'text-pink-500' : 'text-white';
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulated signup (replace with actual auth logic)
-    console.log('Signing up:', { email, password, confirmPassword });
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    try {
+      const response = await fetch('http://localhost:8000/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        navigate('/login');
+      } else {
+        setError(data.detail || 'Signup failed');
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    }
   };
 
   return (
@@ -33,6 +54,7 @@ export default function Signup() {
         transition={{ duration: 0.5 }}
       >
         <h2 className={`text-3xl font-bold ${headingColor} text-center mb-6`}>Sign Up</h2>
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className={`block ${textColor} mb-2`} htmlFor="email">Email</label>

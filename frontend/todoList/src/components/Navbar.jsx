@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setThemes } from '../features/themes';
+import { clearUser } from '../features/authUser';
 import { themeMap } from '../constants/themeMap';
-import { Circle, X, SquareMenu, User, ChevronDown, List, Plus, Edit, Trash, LogIn, UserPlus } from 'lucide-react';
+import { Circle, X, SquareMenu, User, ChevronDown, List, Plus, LogIn, UserPlus, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const currentTheme = useSelector((state) => state.theme.currentTheme);
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn); // Use Redux state
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isTodosOpen, setIsTodosOpen] = useState(false);
-  const navigate = useNavigate();
-
-  // Simulate logged-in state (replace with actual auth logic later)
-  const isLoggedIn = false;
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false); // State for user dropdown
 
   // Text color: black for light theme, white for dark themes
   const textColor = currentTheme.backgroundColor === 'bg-gray-200' ? 'text-black' : 'text-white';
@@ -82,8 +82,6 @@ export default function Navbar() {
   const todosSubmenu = [
     { name: 'Todo List', path: '/todos', icon: <List size={16} className="mr-1 inline" /> },
     { name: 'Add Todo', path: '/todos/add', icon: <Plus size={16} className="mr-1 inline" /> },
-    { name: 'Edit Todo', path: '/todos/edit', icon: <Edit size={16} className="mr-1 inline" /> },
-    { name: 'Delete Todo', path: '/todos/delete', icon: <Trash size={16} className="mr-1 inline" /> },
   ];
 
   // Auth links
@@ -91,6 +89,14 @@ export default function Navbar() {
     { name: 'Login', path: '/login', icon: <LogIn size={16} className="mr-1 inline" /> },
     { name: 'Signup', path: '/signup', icon: <UserPlus size={16} className="mr-1 inline" /> },
   ];
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    dispatch(clearUser()); // Update Redux state
+    setIsUserDropdownOpen(false); // Close dropdown on logout
+    navigate('/login');
+  };
 
   return (
     <motion.header
@@ -182,12 +188,42 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             {isLoggedIn ? (
               <motion.div
-                className="flex items-center"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
+                className="relative"
+                onMouseEnter={() => setIsUserDropdownOpen(true)}
+                onMouseLeave={() => setIsUserDropdownOpen(false)}
               >
-                <User size={20} className={`mr-1 ${textColor}`} />
-                <span className="text-sm font-medium">User</span>
+                <motion.span
+                  className="flex items-center cursor-pointer"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <User size={20} className={`mr-1 ${textColor}`} />
+                  <span className="text-sm font-medium">User</span>
+                </motion.span>
+                <AnimatePresence>
+                  {isUserDropdownOpen && (
+                    <motion.ul
+                      className={`${dropdownBg} absolute top-full right-0 mt-2 w-32 rounded-md shadow-lg backdrop-blur-sm z-50`}
+                      variants={dropdownVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                    >
+                      <motion.li
+                        className="px-4 py-2 hover:text-pink-500 transition-colors"
+                        whileHover={{ x: 5 }}
+                      >
+                        <button
+                          onClick={handleLogout}
+                          className="flex items-center w-full text-left"
+                        >
+                          <LogOut size={16} className="mr-1 inline" />
+                          Logout
+                        </button>
+                      </motion.li>
+                    </motion.ul>
+                  )}
+                </AnimatePresence>
               </motion.div>
             ) : (
               <ul className="flex gap-4 text-sm font-medium">
@@ -275,15 +311,29 @@ export default function Navbar() {
                 </motion.li>
               ))}
               {isLoggedIn ? (
-                <motion.li
-                  variants={menuItemVariants}
-                  whileHover={{ x: 5, color: '#ec4899' }}
-                >
-                  <span className="py-1 flex items-center">
-                    <User size={16} className="mr-1 inline" />
-                    User
-                  </span>
-                </motion.li>
+                <>
+                  <motion.li
+                    variants={menuItemVariants}
+                    whileHover={{ x: 5, color: '#ec4899' }}
+                  >
+                    <span className="py-1 flex items-center">
+                      <User size={16} className="mr-1 inline" />
+                      User
+                    </span>
+                  </motion.li>
+                  <motion.li
+                    variants={menuItemVariants}
+                    whileHover={{ x: 5, color: '#ec4899' }}
+                  >
+                    <button
+                      onClick={handleLogout}
+                      className="py-1 flex items-center"
+                    >
+                      <LogOut size={16} className="mr-1 inline" />
+                      Logout
+                    </button>
+                  </motion.li>
+                </>
               ) : (
                 authItems.map((item) => (
                   <motion.li
