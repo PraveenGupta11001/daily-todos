@@ -129,7 +129,7 @@ export default function TodoForm() {
       }
       // Map status to completed boolean for backend
       const completed = status === 'Completed';
-      const response = await fetch('http://localhost:8000/todos', {
+      const response = await fetch('https://daily-todos-g3np.onrender.com/todos', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

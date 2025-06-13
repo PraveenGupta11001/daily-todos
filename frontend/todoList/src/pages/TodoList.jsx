@@ -27,7 +27,7 @@ export default function TodoList() {
           navigate('/login');
           return;
         }
-        const response = await fetch('http://localhost:8000/todos', {
+        const response = await fetch('https://daily-todos-g3np.onrender.com/todos', {
           headers: {
             'Authorization': `Bearer ${token}`,
           },

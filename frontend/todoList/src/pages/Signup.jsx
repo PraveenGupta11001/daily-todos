@@ -27,7 +27,7 @@ export default function Signup() {
       return;
     }
     try {
-      const response = await fetch('http://localhost:8000/signup', {
+      const response = await fetch('https://daily-todos-g3np.onrender.com/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
