@@ -37,8 +37,8 @@ export default function TodoList() {
           // Map completed boolean to status string
           const updatedTodos = data.map(todo => ({
             ...todo,
-            status: todo.completed ? 'Completed' : 'Pending',
-            showFullDescription: false, // Track description visibility
+            status: todo.completed ? 'Completed' : todo.status || 'Pending',
+            showFullDescription: false,
           }));
           setTodos(updatedTodos);
         } else {
@@ -105,7 +105,7 @@ export default function TodoList() {
   // Truncate description to 10-15 words (approx. 60-90 characters)
   const truncateDescription = (desc) => {
     if (!desc) return 'No description';
-    const maxLength = 90; // Approx. 10-15 words
+    const maxLength = 90;
     return desc.length > maxLength ? `${desc.substring(0, maxLength)}...` : desc;
   };
 

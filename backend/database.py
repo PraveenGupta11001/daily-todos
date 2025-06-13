@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # Update this if the password or username/database name changed
-DATABASE_URL = "postgresql://todo_user:todo@localhost:5433/todo_app"
+DATABASE_URL = "postgresql://todo_user:todo@localhost:5432/todo_app"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

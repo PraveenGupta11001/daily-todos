@@ -9,7 +9,7 @@ export default function TodoEdit() {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState('Pending'); // Replaced completed with status
+  const [status, setStatus] = useState('Pending');
   const [error, setError] = useState('');
   const [suggestions, setSuggestions] = useState(null);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
@@ -48,7 +48,7 @@ export default function TodoEdit() {
           setTitle(data.title);
           setDescription(data.description || '');
           // Map backend completed boolean to status
-          setStatus(data.completed ? 'Completed' : 'Pending');
+          setStatus(data.completed ? 'Completed' : data.status || 'Pending');
         } else {
           setError(getErrorMessage(data.detail || 'Failed to fetch todo'));
           if (response.status === 401) {
@@ -166,7 +166,7 @@ export default function TodoEdit() {
         navigate('/login');
         return;
       }
-      // Map status to completed boolean for backend compatibility
+      // Map status to completed boolean for backend
       const completed = status === 'Completed';
       const response = await fetch(`http://localhost:8000/todos/${id}`, {
         method: 'PUT',
