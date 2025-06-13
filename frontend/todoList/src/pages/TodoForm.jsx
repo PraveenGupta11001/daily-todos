@@ -8,7 +8,7 @@ export default function TodoForm() {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState('Pending'); // Replaced completed with status
+  const [status, setStatus] = useState('Pending');
   const [error, setError] = useState('');
   const [suggestions, setSuggestions] = useState(null);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
@@ -76,7 +76,6 @@ export default function TodoForm() {
         const chunk = decoder.decode(value);
         const lines = chunk.split('\n').filter((line) => line.trim());
         for (const line of lines) {
-          // console.log('Received chunk:', line); // Debugging line
           try {
             const data = JSON.parse(line);
             if (data.response) {
@@ -128,7 +127,7 @@ export default function TodoForm() {
         navigate('/login');
         return;
       }
-      // Map status to completed boolean for backend compatibility
+      // Map status to completed boolean for backend
       const completed = status === 'Completed';
       const response = await fetch('http://localhost:8000/todos', {
         method: 'POST',
