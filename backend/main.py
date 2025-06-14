@@ -15,7 +15,6 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://192.168.29.102:5173",
-        "https://daily-todos-alpha.vercel.app/",
         "https://daily-todos-alpha.vercel.app",
     ],
     allow_credentials=True,

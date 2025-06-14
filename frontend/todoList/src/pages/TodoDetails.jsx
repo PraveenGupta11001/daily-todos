@@ -8,6 +8,7 @@ export default function TodoDetails() {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   const [todo, setTodo] = useState(null);
   const [error, setError] = useState('');
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://daily-todos-g3np.onrender.com';
 
   useEffect(() => {
     const fetchTodo = async () => {
@@ -17,7 +18,7 @@ export default function TodoDetails() {
           navigate('/login');
           return;
         }
-        const response = await fetch(`https://daily-todos-g3np.onrender.com/todos/${id}`, {
+        const response = await fetch(`${BACKEND_URL}/todos/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },

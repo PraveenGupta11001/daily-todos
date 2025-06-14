@@ -9,7 +9,7 @@ load_dotenv()
 
 # Get DATABASE_URL from environment, with a fallback for local development
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://todo_user:todo@localhost:5432/todo_app")
-print(f"Using DATABASE_URL: {DATABASE_URL}")  # Debug log to verify the URL
+# print(f"Using DATABASE_URL: {DATABASE_URL}")  # Debug log to verify the URL
 
 # Create SQLAlchemy engine
 engine = create_engine(DATABASE_URL)

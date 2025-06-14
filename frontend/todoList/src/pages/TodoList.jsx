@@ -8,6 +8,7 @@ export default function TodoList() {
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   const [todos, setTodos] = useState([]);
   const [error, setError] = useState('');
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://daily-todos-g3np.onrender.com';
 
   const getErrorMessage = (errorData) => {
     if (typeof errorData === 'string') return errorData;
@@ -27,7 +28,7 @@ export default function TodoList() {
           navigate('/login');
           return;
         }
-        const response = await fetch('https://daily-todos-g3np.onrender.com/todos', {
+        const response = await fetch(`${BACKEND_URL}/todos`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -66,7 +67,7 @@ export default function TodoList() {
       // Map status to completed boolean for backend
       const completed = newStatus === 'Completed';
       const todoToUpdate = todos.find(todo => todo.id === todoId);
-      const response = await fetch(`http://localhost:8000/todos/${todoId}`, {
+      const response = await fetch(`${BACKEND_URL}/todos/${todoId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -13,7 +13,9 @@ export default function TodoForm() {
   const [suggestions, setSuggestions] = useState(null);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
 
-  const BACKEND_URL = import.meta.env.SUGGESTION_BACKEND_URL || 'https://we-connect-nifx.onrender.com';
+  const CHAT_BACKEND_URL = import.meta.env.AI_SUGGESTION_URL || 'https://we-connect-nifx.onrender.com';
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://daily-todos-g3np.onrender.com';
+
 
   const getErrorMessage = (errorData) => {
     if (typeof errorData === 'string') return errorData;
@@ -43,7 +45,7 @@ export default function TodoForm() {
     setSuggestions(null);
 
     try {
-      const response = await fetch(`${BACKEND_URL}/chat`, {
+      const response = await fetch(`${CHAT_BACKEND_URL}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -129,7 +131,7 @@ export default function TodoForm() {
       }
       // Map status to completed boolean for backend
       const completed = status === 'Completed';
-      const response = await fetch('https://daily-todos-g3np.onrender.com/todos', {
+      const response = await fetch(`${BACKEND_URL}/todos`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
