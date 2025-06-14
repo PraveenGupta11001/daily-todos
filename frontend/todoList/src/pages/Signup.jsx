@@ -10,6 +10,7 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://daily-todos-g3np.onrender.com';
 
   const adjustedBackgroundColor =
     currentTheme.backgroundColor === 'bg-green-600' ? 'bg-emerald-700' :
@@ -27,7 +28,7 @@ export default function Signup() {
       return;
     }
     try {
-      const response = await fetch('https://daily-todos-g3np.onrender.com/signup', {
+      const response = await fetch(`${BACKEND_URL}/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

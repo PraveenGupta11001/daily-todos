@@ -267,8 +267,6 @@ export default function TodoForm() {
               className={`w-full border rounded px-3 py-2 bg-white/10 ${textColor} focus:outline-none focus:ring-2 focus:ring-pink-500`}
             >
               <option value="Pending">Pending</option>
-              <option value="In Progress">In Progress</option>
-              <option value="In Review">In Review</option>
               <option value="Completed">Completed</option>
             </select>
           </div>

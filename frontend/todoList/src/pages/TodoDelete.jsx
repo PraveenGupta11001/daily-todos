@@ -8,6 +8,7 @@ export default function TodoDelete() {
   const navigate = useNavigate();
   const currentTheme = useSelector((state) => state.theme.currentTheme);
   const [error, setError] = useState('');
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://daily-todos-g3np.onrender.com';
 
   useEffect(() => {
     if (!id) {
@@ -41,7 +42,7 @@ export default function TodoDelete() {
         navigate('/login');
         return;
       }
-      const response = await fetch(`https://daily-todos-g3np.onrender.com/todos/${id}`, {
+      const response = await fetch(`${BACKEND_URL}/todos/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

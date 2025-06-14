@@ -142,7 +142,7 @@ export default function TodoList() {
           {todos.length === 0 ? (
             <p className="text-center">No todos found. Create a new one!</p>
           ) : (
-            todos.map((todo) => (
+            todos.slice(0).reverse().map((todo) => (
               <motion.div
                 key={todo.id}
                 className="bg-white/20 backdrop-blur-md p-4 rounded-lg shadow-md mb-4 flex gap-4 justify-between items-center"
@@ -173,8 +173,6 @@ export default function TodoList() {
                       className={`border rounded px-2 py-1 bg-white/10 ${textColor} focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm`}
                     >
                       <option value="Pending">Pending</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="In Review">In Review</option>
                       <option value="Completed">Completed</option>
                     </select>
                   </div>
