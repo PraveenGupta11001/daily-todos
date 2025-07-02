@@ -27,6 +27,42 @@ function ScrollAndLoad() {
     return () => clearTimeout(timer); // Cleanup timer on unmount
   }, [location.pathname, navigationType]); // Trigger on path or navigation type change
 
+  // Trying out tailortalk chatbot for website
+  // -------------------------------------------------------------------
+  // This effect will load the TailorTalk widget script and initialize it
+  React.useLayoutEffect(() => {
+    if (!document.getElementById("tailortalk-widget-script")) {
+      const script = document.createElement("script");
+      script.id = "tailortalk-widget-script";
+      script.src = "https://plugins.tailortalk.ai/widget.js";
+      script.async = true;
+      document.body.appendChild(script);
+  
+      script.onload = () => {
+        window.TailorTalk && window.TailorTalk.init({
+          widgetName: "testing agent",
+          agentId: "GFBYQFWEM_testing_agent",
+          color: "#6366f1",
+          position: {
+        "bottom": "20px",
+        "left": "20px"
+},
+          options: {
+        "buttonWidth": 150,
+        "buttonHeight": 40,
+        "buttonText": "Let's Chat"
+}
+        });
+      };
+    }
+  
+    return () => {
+      const container = document.querySelector(".tt-widget-container");
+      if (container) container.remove();
+    };
+  }, []);
+  // -------------------------------------------------------------------
+
   return (
     <>
       {isLoading && (
