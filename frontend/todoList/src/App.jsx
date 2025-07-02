@@ -45,7 +45,7 @@ function ScrollAndLoad() {
           color: "#6366f1",
           position: {
         "bottom": "20px",
-        "left": "20px"
+        "right": "20px"
 },
           options: {
         "buttonWidth": 150,
